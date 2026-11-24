@@ -110,14 +110,14 @@ These are tracked as the **Stretch backlog** below, not silently added.
 
 ## Risks and mitigations
 
-| Risk | Mitigation |
-|---|---|
-| Scope creep | The non-goals list is binding; a new feature must replace an MVP item or go to Stretch |
-| Timezone/DST complexity | Write slot generation as pure functions and test first |
-| Concurrency bugs | Enforce uniqueness at the database level, not in application code |
-| Free-tier limits | Project is far below every limit; no card on file |
-| Motivation dip | Ship a demo every 3–4 weeks (weeks 3, 6, 9, 14) |
-| Over-engineering | Single app, one framework, no queues in MVP |
+| Risk                    | Mitigation                                                                             |
+| ----------------------- | -------------------------------------------------------------------------------------- |
+| Scope creep             | The non-goals list is binding; a new feature must replace an MVP item or go to Stretch |
+| Timezone/DST complexity | Write slot generation as pure functions and test first                                 |
+| Concurrency bugs        | Enforce uniqueness at the database level, not in application code                      |
+| Free-tier limits        | Project is far below every limit; no card on file                                      |
+| Motivation dip          | Ship a demo every 3–4 weeks (weeks 3, 6, 9, 14)                                        |
+| Over-engineering        | Single app, one framework, no queues in MVP                                            |
 
 ---
 

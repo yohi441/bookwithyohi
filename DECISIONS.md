@@ -7,13 +7,13 @@ Running record of choices made in this project — why they were made, and what 
 ## 2026-11-06 — Project name: YohiSlot
 
 **Decision:** Name the project **YohiSlot**; repo `yohi441/yohislot`; local folder `~/projects/yohislot`.
-**Why:** "Slotwise" is an existing company in the same booking/scheduling space (slotwise.xyz), so using it would look like a clone. "YohiSlot" keeps the root word *slot*, is tied to your handle, and had no existing product or DNS record.
+**Why:** "Slotwise" is an existing company in the same booking/scheduling space (slotwise.xyz), so using it would look like a clone. "YohiSlot" keeps the root word _slot_, is tied to your handle, and had no existing product or DNS record.
 **Rejected:** Slotwise (collision), OpenSlot / Bookend (multiple existing products), Slotly (generic).
 
 ## 2026-11-06 — Project shape: one real app, not a tutorial
 
 **Decision:** Build a booking/scheduling SaaS with genuine backend difficulty (timezone slot generation, double-booking prevention) rather than a todo/blog/e-commerce clone.
-**Why:** Needs to teach the stack *and* be a portfolio piece with something substantive to discuss in interviews.
+**Why:** Needs to teach the stack _and_ be a portfolio piece with something substantive to discuss in interviews.
 
 ## 2026-11-06 — Backend: Next.js full-stack
 

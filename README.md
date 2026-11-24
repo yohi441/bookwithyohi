@@ -22,21 +22,21 @@ This is a learning project for the Node.js / TypeScript / React / Next.js stack.
 
 ## Stack
 
-| Layer | Choice |
-|---|---|
-| Language | TypeScript (strict) |
-| Framework | Next.js (App Router), React |
-| Backend | Next route handlers + server actions |
-| Database | Postgres (Neon) + Prisma |
-| Validation | Zod |
-| Auth | better-auth |
-| UI | Tailwind + shadcn/ui + react-hook-form |
-| Email | Resend |
-| Jobs | Vercel Cron |
-| Tests | Vitest + Playwright |
-| Hosting | Vercel |
-| CI | GitHub Actions |
-| Monitoring | Sentry |
+| Layer      | Choice                                 |
+| ---------- | -------------------------------------- |
+| Language   | TypeScript (strict)                    |
+| Framework  | Next.js (App Router), React            |
+| Backend    | Next route handlers + server actions   |
+| Database   | Postgres (Neon) + Prisma               |
+| Validation | Zod                                    |
+| Auth       | better-auth                            |
+| UI         | Tailwind + shadcn/ui + react-hook-form |
+| Email      | Resend                                 |
+| Jobs       | Vercel Cron                            |
+| Tests      | Vitest + Playwright                    |
+| Hosting    | Vercel                                 |
+| CI         | GitHub Actions                         |
+| Monitoring | Sentry                                 |
 
 ## Getting started
 
@@ -62,13 +62,13 @@ Open <http://localhost:3000>.
 
 To be added as features land:
 
-| Variable | Purpose | Phase |
-|---|---|---|
-| `DATABASE_URL` | Postgres connection string | Week 3 |
-| `BETTER_AUTH_SECRET` | Auth signing secret | Week 4 |
-| `RESEND_API_KEY` | Transactional email | Week 11 |
-| `NEXT_PUBLIC_SENTRY_DSN` | Error monitoring | Week 15 |
-| `SENTRY_AUTH_TOKEN` | Source map upload (secret) | Week 15 |
+| Variable                 | Purpose                    | Phase   |
+| ------------------------ | -------------------------- | ------- |
+| `DATABASE_URL`           | Postgres connection string | Week 3  |
+| `BETTER_AUTH_SECRET`     | Auth signing secret        | Week 4  |
+| `RESEND_API_KEY`         | Transactional email        | Week 11 |
+| `NEXT_PUBLIC_SENTRY_DSN` | Error monitoring           | Week 15 |
+| `SENTRY_AUTH_TOKEN`      | Source map upload (secret) | Week 15 |
 
 ## Project structure
 
