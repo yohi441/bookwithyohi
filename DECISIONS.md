@@ -68,6 +68,12 @@ Running record of choices made in this project — why they were made, and what 
 **Decision:** 60 numbered steps, 7 MVP features, 8 stretch items, and an explicit non-goals list in `SCOPE.md`. A new feature must replace an MVP item or go to Stretch.
 **Why:** At 5–8 hrs/week, scope creep is the main risk to finishing.
 
+## 2026-11-24 — Work rhythm: flexible
+
+**Decision:** No fixed weekdays. Work whenever time is available; aim for two sittings of roughly 3–4 hours per week, but don't force a schedule.
+**Why:** You prefer flexibility and want to move faster whenever time opens up.
+**Guardrail:** Keep the 5–8 hours/week pace in mind. One long session is fine; many scattered 20-minute sessions are not.
+
 ---
 
 ## Template for future entries
