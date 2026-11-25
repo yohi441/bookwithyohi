@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { getEventTypes } from "@/lib/data";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
 export const metadata = {
   title: "Dashboard | YohiSlot",
@@ -24,24 +26,28 @@ export default function DashboardPage() {
               Placeholder data for now — real data arrives in Week 3.
             </p>
           </div>
-          <button
+          <Button
             type="button"
             disabled
             className="cursor-not-allowed rounded-full border border-zinc-200 px-4 py-2 text-sm text-zinc-400 dark:border-zinc-800 dark:text-zinc-600"
           >
             + New event (soon)
-          </button>
+          </Button>
         </div>
 
-        <ul className="mt-10 grid gap-4 sm:grid-cols-2">
+        <div className="mt-10 grid gap-4 sm:grid-cols-2">
           {eventTypes.map((event) => (
-            <li
+            <Card
               key={event.id}
               className="rounded-2xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-950"
             >
-              <h2 className="text-xl font-medium text-black dark:text-zinc-50">{event.name}</h2>
-              <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">{event.description}</p>
-              <div className="mt-6 flex items-center justify-between gap-4">
+              <CardHeader className="text-xl font-medium text-black dark:text-zinc-50">
+                <CardTitle>{event.name}</CardTitle>
+              </CardHeader>
+              <CardContent className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
+                {event.description}
+              </CardContent>
+              <CardFooter className="mt-6 flex items-center justify-between gap-4">
                 <span className="rounded-full bg-zinc-100 px-3 py-1 text-xs text-zinc-600 dark:bg-zinc-900 dark:text-zinc-400">
                   {event.durationMinutes} min
                 </span>
@@ -51,10 +57,10 @@ export default function DashboardPage() {
                 >
                   View booking page →
                 </Link>
-              </div>
-            </li>
+              </CardFooter>
+            </Card>
           ))}
-        </ul>
+        </div>
       </div>
     </main>
   );

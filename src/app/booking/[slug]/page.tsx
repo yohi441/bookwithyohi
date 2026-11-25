@@ -2,6 +2,7 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getEventTypeBySlug } from "@/lib/data";
+import { Button } from "@/components/ui/button";
 
 export default function BookingPage({ params }: PageProps<"/booking/[slug]">) {
   return (
@@ -46,14 +47,14 @@ async function BookingDetails({ params }: Pick<PageProps<"/booking/[slug]">, "pa
         </p>
         <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3">
           {["09:00", "10:30", "14:00", "15:30", "17:00", "18:30"].map((time) => (
-            <button
+            <Button
               key={time}
               type="button"
               disabled
               className="cursor-not-allowed rounded-lg border border-zinc-200 px-3 py-2 text-sm text-zinc-400 dark:border-zinc-800 dark:text-zinc-600"
             >
               {time}
-            </button>
+            </Button>
           ))}
         </div>
       </div>
