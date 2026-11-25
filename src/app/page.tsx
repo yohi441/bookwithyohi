@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function Home() {
   return (
     <div className="flex flex-1 items-center justify-center bg-zinc-50 px-6 font-sans dark:bg-black">
@@ -12,6 +14,21 @@ export default function Home() {
           Share one link, let guests pick a time, and never double-book again. The app is under
           construction — week by week.
         </p>
+
+        <div className="mt-10 flex flex-wrap items-center justify-center gap-4 text-sm font-medium">
+          <Link
+            href="/dashboard"
+            className="rounded-full bg-zinc-900 px-5 py-2.5 text-white transition-colors hover:bg-zinc-700 dark:bg-white dark:text-black dark:hover:bg-zinc-300"
+          >
+            Host dashboard →
+          </Link>
+          <Link
+            href="/booking/intro-chat"
+            className="rounded-full border border-zinc-300 px-5 py-2.5 text-zinc-900 transition-colors hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-100 dark:hover:bg-zinc-900"
+          >
+            Sample booking page →
+          </Link>
+        </div>
       </main>
     </div>
   );
