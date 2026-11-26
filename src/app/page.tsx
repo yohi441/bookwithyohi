@@ -4,6 +4,9 @@ export default function Home() {
   return (
     <div className="flex flex-1 items-center justify-center bg-zinc-50 px-6 font-sans dark:bg-black">
       <main className="w-full max-w-2xl text-center">
+        <Link href="/login" className="text-sm font-medium underline underline-offset-4">
+          Log in
+        </Link>
         <p className="mb-4 text-sm font-semibold tracking-widest text-zinc-500 uppercase dark:text-zinc-400">
           YohiSlot
         </p>
