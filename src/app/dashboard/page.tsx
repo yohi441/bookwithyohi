@@ -1,15 +1,46 @@
 import Link from "next/link";
-import { getEventTypes } from "@/lib/data";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { prisma } from "@/lib/prisma";
+import { Suspense } from "react";
 
 export const metadata = {
   title: "Dashboard | YohiSlot",
 };
 
-export default function DashboardPage() {
-  const eventTypes = getEventTypes();
+async function EventList() {
+  const eventTypes = await prisma.eventType.findMany({ orderBy: { id: "asc" } });
+  return (
+    <div className="mt-10 grid gap-4 sm:grid-cols-2">
+      {eventTypes.map((event) => (
+        <Card
+          key={event.id}
+          className="rounded-2xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-950"
+        >
+          <CardHeader className="text-xl font-medium text-black dark:text-zinc-50">
+            <CardTitle>{event.name}</CardTitle>
+          </CardHeader>
+          <CardContent className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
+            {event.description}
+          </CardContent>
+          <CardFooter className="mt-6 flex items-center justify-between gap-4">
+            <span className="rounded-full bg-zinc-100 px-3 py-1 text-xs text-zinc-600 dark:bg-zinc-900 dark:text-zinc-400">
+              {event.durationMinutes} min
+            </span>
+            <Link
+              href={`/booking/${event.slug}`}
+              className="text-sm font-medium text-zinc-900 underline underline-offset-4 dark:text-zinc-100"
+            >
+              View booking page →
+            </Link>
+          </CardFooter>
+        </Card>
+      ))}
+    </div>
+  );
+}
 
+export default function DashboardPage() {
   return (
     <main className="min-h-full bg-zinc-50 px-6 py-16 font-sans dark:bg-black">
       <div className="mx-auto w-full max-w-4xl">
@@ -23,7 +54,7 @@ export default function DashboardPage() {
               Your event types
             </h1>
             <p className="mt-2 text-zinc-600 dark:text-zinc-400">
-              Placeholder data for now — real data arrives in Week 3.
+              Manage the slots people can book with you.
             </p>
           </div>
           <Button
@@ -34,33 +65,9 @@ export default function DashboardPage() {
             + New event (soon)
           </Button>
         </div>
-
-        <div className="mt-10 grid gap-4 sm:grid-cols-2">
-          {eventTypes.map((event) => (
-            <Card
-              key={event.id}
-              className="rounded-2xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-950"
-            >
-              <CardHeader className="text-xl font-medium text-black dark:text-zinc-50">
-                <CardTitle>{event.name}</CardTitle>
-              </CardHeader>
-              <CardContent className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">
-                {event.description}
-              </CardContent>
-              <CardFooter className="mt-6 flex items-center justify-between gap-4">
-                <span className="rounded-full bg-zinc-100 px-3 py-1 text-xs text-zinc-600 dark:bg-zinc-900 dark:text-zinc-400">
-                  {event.durationMinutes} min
-                </span>
-                <Link
-                  href={`/booking/${event.slug}`}
-                  className="text-sm font-medium text-zinc-900 underline underline-offset-4 dark:text-zinc-100"
-                >
-                  View booking page →
-                </Link>
-              </CardFooter>
-            </Card>
-          ))}
-        </div>
+        <Suspense fallback={<div>Loading event types...</div>}>
+          <EventList />
+        </Suspense>
       </div>
     </main>
   );
