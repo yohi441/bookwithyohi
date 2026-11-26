@@ -1,15 +1,17 @@
 import Link from "next/link";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { prisma } from "@/lib/prisma";
+import { getPrisma } from "@/lib/prisma";
 import { Suspense } from "react";
+import { connection } from "next/server";
 
 export const metadata = {
   title: "Dashboard | YohiSlot",
 };
 
 async function EventList() {
-  const eventTypes = await prisma.eventType.findMany({ orderBy: { id: "asc" } });
+  await connection(); // await for a real visitor, not build time
+  const eventTypes = await getPrisma().eventType.findMany({ orderBy: { id: "asc" } });
   return (
     <div className="mt-10 grid gap-4 sm:grid-cols-2">
       {eventTypes.map((event) => (

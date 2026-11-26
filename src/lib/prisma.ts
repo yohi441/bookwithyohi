@@ -1,10 +1,13 @@
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../generated/prisma/client";
 
-const connectionString = process.env.DATABASE_URL;
-if (!connectionString) {
-  throw new Error("DATABASE_URL is not set in .env");
-}
+let client: PrismaClient | undefined;
 
-const adapter = new PrismaPg({ connectionString });
-export const prisma = new PrismaClient({ adapter });
+export function getPrisma() {
+  if (!client) {
+    const connectionString = process.env.DATABASE_URL;
+    if (!connectionString) throw new Error("DATABASE_URL is missing");
+    client = new PrismaClient({ adapter: new PrismaPg({ connectionString }) });
+  }
+  return client;
+}
