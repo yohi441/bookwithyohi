@@ -12,8 +12,61 @@ datasource db {
   provider = "postgresql"
 }
 
-model Practice {
-  id        Int   @id @default(autoincrement())
-  notes     String
-  createdAt DateTime @default(now())
+model User {
+  id                     Int                     @id @default(autoincrement())
+  email                  String                  @unique
+  name                   String
+  timezone               String
+  createdAt              DateTime                @default(now())
+  updatedAt              DateTime                @updatedAt
+  eventTypes             EventType[]
+  availabilities         Availability[]
+  availabilityExceptions AvailabilityException[]
+}
+
+model EventType {
+  id              Int       @id @default(autoincrement())
+  userId          Int
+  user            User      @relation(fields: [userId], references: [id])
+  slug            String    @unique
+  name            String
+  description     String
+  durationMinutes Int
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  bookings        Booking[]
+}
+
+model Availability {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id])
+  dayOfWeek   Int
+  startMinute Int
+  endMinute   Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model AvailabilityException {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id])
+  date        DateTime @db.Date
+  startMinute Int?
+  endMinute   Int?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Booking {
+  id          Int       @id @default(autoincrement())
+  eventTypeId Int
+  eventType   EventType @relation(fields: [eventTypeId], references: [id])
+  guestName   String
+  guestEmail  String
+  startUtc    DateTime
+  endUtc      DateTime
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }
