@@ -10,7 +10,8 @@
     "typecheck": "npm run typegen && tsc --noEmit",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "typegen": "next typegen"
+    "typegen": "next typegen",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@prisma/client": "^7.10.1",
