@@ -4,6 +4,10 @@ import { Button } from "@/components/ui/button";
 import { getPrisma } from "@/lib/prisma";
 import { Suspense } from "react";
 import { connection } from "next/server";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
+import { SignOutButton } from "@/components/sign-out-button";
 
 export const metadata = {
   title: "Dashboard | YohiSlot",
@@ -42,13 +46,22 @@ async function EventList() {
   );
 }
 
-export default function DashboardPage() {
+async function DashboardContent() {
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session) redirect("/login");
   return (
     <main className="min-h-full bg-zinc-50 px-6 py-16 font-sans dark:bg-black">
       <div className="mx-auto w-full max-w-4xl">
         <Link href="/" className="text-sm text-zinc-500 hover:text-zinc-900 dark:hover:text-white">
           ← Home
         </Link>
+        <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm dark:border-zinc-800 dark:bg-zinc-950">
+          <span className="text-zinc-600 dark:text-zinc-400">
+            Signed in as{" "}
+            <span className="font-medium text-black dark:text-zinc-50">{session.user.email}</span>
+          </span>
+          <SignOutButton />
+        </div>
 
         <div className="mt-8 flex flex-wrap items-end justify-between gap-4">
           <div>
@@ -72,5 +85,15 @@ export default function DashboardPage() {
         </Suspense>
       </div>
     </main>
+  );
+}
+
+export default function DashboardPage() {
+  return (
+    <Suspense
+      fallback={<div className="p-10 text-center text-sm text-zinc-500">Loading dashboard...</div>}
+    >
+      <DashboardContent />
+    </Suspense>
   );
 }
