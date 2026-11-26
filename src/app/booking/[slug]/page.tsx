@@ -1,7 +1,8 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getEventTypeBySlug } from "@/lib/data";
+import { getPublicEventTypeBySlug } from "@/lib/data";
+import { connection } from "next/server";
 import { Button } from "@/components/ui/button";
 
 export default function BookingPage({ params }: PageProps<"/booking/[slug]">) {
@@ -22,8 +23,9 @@ export default function BookingPage({ params }: PageProps<"/booking/[slug]">) {
 }
 
 async function BookingDetails({ params }: Pick<PageProps<"/booking/[slug]">, "params">) {
+  await connection();
   const { slug } = await params;
-  const event = getEventTypeBySlug(slug);
+  const event = await getPublicEventTypeBySlug(slug);
 
   if (!event) {
     notFound();
