@@ -1,21 +1,19 @@
 import Link from "next/link";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { getPrisma } from "@/lib/prisma";
 import { Suspense } from "react";
 import { connection } from "next/server";
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
-import { redirect } from "next/navigation";
 import { SignOutButton } from "@/components/sign-out-button";
+import { getEventTypesForUser } from "@/lib/data";
+import { requireUser } from "@/lib/auth-session";
 
 export const metadata = {
   title: "Dashboard | YohiSlot",
 };
 
-async function EventList() {
+async function EventList({ userId }: { userId: number }) {
   await connection(); // await for a real visitor, not build time
-  const eventTypes = await getPrisma().eventType.findMany({ orderBy: { id: "asc" } });
+  const eventTypes = await getEventTypesForUser(userId);
   return (
     <div className="mt-10 grid gap-4 sm:grid-cols-2">
       {eventTypes.map((event) => (
@@ -47,8 +45,7 @@ async function EventList() {
 }
 
 async function DashboardContent() {
-  const session = await auth.api.getSession({ headers: await headers() });
-  if (!session) redirect("/login");
+  const user = await requireUser();
   return (
     <main className="min-h-full bg-zinc-50 px-6 py-16 font-sans dark:bg-black">
       <div className="mx-auto w-full max-w-4xl">
@@ -58,7 +55,7 @@ async function DashboardContent() {
         <div className="mt-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-zinc-200 bg-white px-4 py-3 text-sm dark:border-zinc-800 dark:bg-zinc-950">
           <span className="text-zinc-600 dark:text-zinc-400">
             Signed in as{" "}
-            <span className="font-medium text-black dark:text-zinc-50">{session.user.email}</span>
+            <span className="font-medium text-black dark:text-zinc-50">{user.email}</span>
           </span>
           <SignOutButton />
         </div>
@@ -81,7 +78,7 @@ async function DashboardContent() {
           </Button>
         </div>
         <Suspense fallback={<div>Loading event types...</div>}>
-          <EventList />
+          <EventList userId={Number(user.id)} />
         </Suspense>
       </div>
     </main>
