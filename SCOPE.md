@@ -1,9 +1,9 @@
-# YohiSlot — MVP Scope
+# BookWithYohi — MVP Scope
 
 **Status:** Draft v1
 **Owner:** yohi
 **Created:** 2026-11-06
-**Project:** booking/scheduling SaaS ("YohiSlot")
+**Project:** booking/scheduling SaaS ("BookWithYohi")
 
 ---
 

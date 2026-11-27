@@ -4,6 +4,13 @@ Running record of choices made in this project — why they were made, and what 
 
 ---
 
+## 2026-11-27 — Project rename: YohiSlot → BookWithYohi
+
+**Decision:** Rename the project to **BookWithYohi**; repo `yohi441/bookwithyohi`; package `bookwithyohi`.
+**Why:** "YohiSlot" is easy to mishear as "Yohi-slut" because of the _slot_ sound. "BookWithYohi" reads naturally, keeps your handle, and says what the app does.
+**Rejected:** YohiBook, YohiTime, YohiCalendar (all decent, but less personal and descriptive).
+**Note:** The 2026-11-06 entry below is kept as history.
+
 ## 2026-11-06 — Project name: YohiSlot
 
 **Decision:** Name the project **YohiSlot**; repo `yohi441/yohislot`; local folder `~/projects/yohislot`.

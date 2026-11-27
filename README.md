@@ -1,4 +1,4 @@
-# YohiSlot
+# BookWithYohi
 
 A booking/scheduling SaaS: hosts publish event types and availability, guests book timezone-correct slots through a public link.
 

@@ -4,7 +4,7 @@ import { nextCookies } from "better-auth/next-js";
 import { getPrisma } from "./prisma";
 
 export const auth = betterAuth({
-  appName: "YohiSlot",
+  appName: "BookWithYohi",
   baseURL: {
     allowedHosts: ["localhost:*", "127.0.0.1:*", "192.168.*.*:*", "*.vercel.app"],
     protocol: "auto",
