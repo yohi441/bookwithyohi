@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "YohiSlot",
+  title: "BookWithYohi",
   description: "Simple, timezone-aware scheduling for hosts and guests.",
 };
 

@@ -8,7 +8,7 @@ import { getEventTypesForUser } from "@/lib/data";
 import { requireUser } from "@/lib/auth-session";
 
 export const metadata = {
-  title: "Dashboard | YohiSlot",
+  title: "Dashboard | BookWithYohi",
 };
 
 async function EventList({ userId }: { userId: number }) {

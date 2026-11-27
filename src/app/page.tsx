@@ -8,7 +8,7 @@ export default function Home() {
           Log in
         </Link>
         <p className="mb-4 text-sm font-semibold tracking-widest text-zinc-500 uppercase dark:text-zinc-400">
-          YohiSlot
+          BookWithYohi
         </p>
         <h1 className="text-4xl font-semibold tracking-tight text-balance text-black sm:text-5xl dark:text-zinc-50">
           Booking that fits everyone&apos;s timezone.
