@@ -2,9 +2,10 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { connection } from "next/server";
 import { SignOutButton } from "@/components/sign-out-button";
-import { getEventTypesForUser } from "@/lib/data";
+import { getAvailabilityForUser, getEventTypesForUser } from "@/lib/data";
 import { requireUser } from "@/lib/auth-session";
 import { EventTypeList } from "@/components/event-type-list";
+import { AvailabilityEditor } from "@/components/availability-editor";
 
 export const metadata = {
   title: "Dashboard | BookWithYohi",
@@ -24,6 +25,12 @@ async function EventList({ userId }: { userId: number }) {
       }))}
     />
   );
+}
+
+async function AvailabilitySection({ userId }: { userId: number }) {
+  await connection();
+  const { weekly, exceptions } = await getAvailabilityForUser(userId);
+  return <AvailabilityEditor weekly={weekly} exceptions={exceptions} />;
 }
 
 async function DashboardContent() {
@@ -55,6 +62,18 @@ async function DashboardContent() {
         <Suspense fallback={<div>Loading event types...</div>}>
           <EventList userId={Number(user.id)} />
         </Suspense>
+
+        <div className="mt-12">
+          <h2 className="text-2xl font-semibold tracking-tight text-black dark:text-zinc-50">
+            Your weekly availability
+          </h2>
+          <p className="mt-2 text-zinc-600 dark:text-zinc-400">
+            Guests can only book inside these hours. All your event types share them.
+          </p>
+          <Suspense fallback={<div>Loading availability...</div>}>
+            <AvailabilitySection userId={Number(user.id)} />
+          </Suspense>
+        </div>
       </div>
     </main>
   );
