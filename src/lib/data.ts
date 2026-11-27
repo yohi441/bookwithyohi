@@ -20,6 +20,31 @@ export async function getEventTypeForUser(userId: number, id: number) {
   return getPrisma().eventType.findFirst({ where: { id, userId } });
 }
 
+export async function getAvailabilityForUser(userId: number) {
+  const prisma = getPrisma();
+  const [weekly, exceptions] = await Promise.all([
+    prisma.availability.findMany({
+      where: { userId },
+      orderBy: { dayOfWeek: "asc" },
+      select: { dayOfWeek: true, startMinute: true, endMinute: true },
+    }),
+    prisma.availabilityException.findMany({
+      where: { userId },
+      orderBy: { date: "asc" },
+      select: { date: true, startMinute: true, endMinute: true },
+    }),
+  ]);
+
+  return {
+    weekly,
+    exceptions: exceptions.map((row) => ({
+      date: row.date.toISOString().slice(0, 10),
+      startMinute: row.startMinute,
+      endMinute: row.endMinute,
+    })),
+  };
+}
+
 export async function getPublicEventTypeBySlug(slug: string): Promise<PublicEventType | null> {
   const event = await getPrisma().eventType.findUnique({
     where: { slug },
