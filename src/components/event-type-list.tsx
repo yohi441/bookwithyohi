@@ -207,6 +207,13 @@ export function EventTypeList({ eventTypes }: { eventTypes: EventTypeItem[] }) {
       {creating && (
         <EventTypeForm onSaved={() => setCreating(false)} onCancel={() => setCreating(false)} />
       )}
+      {eventTypes.length === 0 && !creating && (
+        <div className="mt-10 rounded-2xl border border-dashed border-zinc-300 p-10 text-center">
+          <p>No event types yet</p>
+          <p>Create your first one to share a booking link.</p>
+          <Button onClick={() => setCreating(true)}>Create your first event</Button>
+        </div>
+      )}
       <div className="mt-10 grid gap-4 sm:grid-cols-2">
         {eventTypes.map((eventType) => (
           <EventCard key={eventType.id} eventType={eventType} />
