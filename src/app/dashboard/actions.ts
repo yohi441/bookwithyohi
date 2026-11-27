@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { requireUser } from "@/lib/auth-session";
 import { getPrisma } from "@/lib/prisma";
 import { eventTypeSchema, type EventTypeInput } from "@/lib/schemas/event-type";
+import { uniqueSlug } from "@/lib/slug";
 
 type ActionResult = { ok: true } | { ok: false; error: string };
 
@@ -15,7 +16,7 @@ export async function createEventType(input: EventTypeInput): Promise<ActionResu
   await getPrisma().eventType.create({
     data: {
       ...parsed.data,
-      slug: `event-${crypto.randomUUID()}`,
+      slug: await uniqueSlug(parsed.data.name),
       userId: Number(user.id),
     },
   });
