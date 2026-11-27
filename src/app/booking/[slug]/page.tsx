@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { getPublicEventTypeBySlug } from "@/lib/data";
 import { connection } from "next/server";
 import { Button } from "@/components/ui/button";
+import { TimezoneDisplay } from "@/components/timezone-display";
 
 export default function BookingPage({ params }: PageProps<"/booking/[slug]">) {
   return (
@@ -61,9 +62,7 @@ async function BookingDetails({ params }: Pick<PageProps<"/booking/[slug]">, "pa
         </div>
       </div>
 
-      <p className="mt-8 text-xs text-zinc-500 dark:text-zinc-400">
-        Times will be shown in your own timezone once the booking engine lands.
-      </p>
+      <TimezoneDisplay />
     </div>
   );
 }
