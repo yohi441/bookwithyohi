@@ -106,7 +106,11 @@ export function AvailabilityEditor({
             />
           </div>
         ))}
-        {errors.weekly && <p className="text-xs text-red-600">Check the weekly hours.</p>}
+        {errors.weekly && (
+          <p className="text-xs text-red-600">
+            {errors.weekly.message ?? "Check the weekly hours."}
+          </p>
+        )}
       </div>
 
       <div className="space-y-3">
@@ -161,7 +165,11 @@ export function AvailabilityEditor({
             </Button>
           </div>
         ))}
-        {errors.exceptions && <p className="text-xs text-red-600">Check the exception dates.</p>}
+        {errors.exceptions && (
+          <p className="text-xs text-red-600">
+            {errors.exceptions.message ?? "Check the exception dates."}
+          </p>
+        )}
       </div>
 
       {feedback && (
