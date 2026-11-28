@@ -1,10 +1,10 @@
 import { Suspense } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getPublicEventTypeBySlug } from "@/lib/data";
 import { connection } from "next/server";
-import { Button } from "@/components/ui/button";
+import { BookingForm } from "@/components/booking-form";
 import { TimezoneDisplay } from "@/components/timezone-display";
+import { getPublicBookingContext } from "@/lib/data";
 
 export default function BookingPage({ params }: PageProps<"/booking/[slug]">) {
   return (
@@ -26,11 +26,13 @@ export default function BookingPage({ params }: PageProps<"/booking/[slug]">) {
 async function BookingDetails({ params }: Pick<PageProps<"/booking/[slug]">, "params">) {
   await connection();
   const { slug } = await params;
-  const event = await getPublicEventTypeBySlug(slug);
+  const context = await getPublicBookingContext(slug);
 
-  if (!event) {
+  if (!context) {
     notFound();
   }
+
+  const { event } = context;
 
   return (
     <div className="w-full max-w-lg rounded-2xl border border-zinc-200 bg-white p-8 shadow-sm dark:border-zinc-800 dark:bg-zinc-950">
@@ -43,25 +45,7 @@ async function BookingDetails({ params }: Pick<PageProps<"/booking/[slug]">, "pa
         {event.durationMinutes} minutes
       </p>
 
-      <div className="mt-8 border-t border-zinc-200 pt-8 dark:border-zinc-800">
-        <h2 className="text-lg font-medium text-black dark:text-zinc-50">Available times</h2>
-        <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
-          Slot picking comes later. These are for layout only.
-        </p>
-        <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3">
-          {["09:00", "10:30", "14:00", "15:30", "17:00", "18:30"].map((time) => (
-            <Button
-              key={time}
-              type="button"
-              disabled
-              className="cursor-not-allowed rounded-lg border border-zinc-200 px-3 py-2 text-sm text-zinc-400 dark:border-zinc-800 dark:text-zinc-600"
-            >
-              {time}
-            </Button>
-          ))}
-        </div>
-      </div>
-
+      <BookingForm slug={slug} slots={context.slots} />
       <TimezoneDisplay />
     </div>
   );

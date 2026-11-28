@@ -18,6 +18,13 @@ Running record of choices made in this project — why they were made, and what 
 **Guardrail:** Callers pass IANA timezone names; all stored slot times are UTC. Offsets are derived from `formatInTimeZone` at explicit instants and verified by a round-trip, so ambiguous fall-back times resolve identically on developer machines and in UTC-based CI; nonexistent spring-forward times are skipped.
 **Rejected:** Luxon (larger API for one conversion), raw Intl alone (the plan calls for a timezone library).
 
+## 2026-11-28 — Booking writes: Server Action + rechecked slots
+
+**Decision:** The public booking form posts to a Server Action using React `useActionState`; the action recomputes the slot set on the server and writes the booking inside a Prisma transaction.
+**Why:** It keeps validation and the write together, follows the Next 16 forms pattern, and means a crafted client cannot invent a slot. UTC strings are the only slot data sent to the browser, which formats them for display.
+**Guardrail:** Step 39 must add the database uniqueness constraint; the transaction alone cannot prevent simultaneous double bookings.
+**Rejected:** A separate REST route handler for this form (extra surface for no MVP benefit).
+
 ## 2026-11-06 — Project name: YohiSlot
 
 **Decision:** Name the project **YohiSlot**; repo `yohi441/yohislot`; local folder `~/projects/yohislot`.
