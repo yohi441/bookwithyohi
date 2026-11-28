@@ -1,4 +1,4 @@
-import { formatInTimeZone, fromZonedTime } from "date-fns-tz";
+import { formatInTimeZone } from "date-fns-tz";
 
 /**
  * Pure slot generation. This module has no database, network, or framework
@@ -7,7 +7,9 @@ import { formatInTimeZone, fromZonedTime } from "date-fns-tz";
  * Wall-clock availability is interpreted in the host's IANA timezone; every
  * slot returned here is a UTC instant. Conversions use `date-fns-tz` (which
  * reads the IANA DST database via Intl), and local times that do not exist
- * because of a daylight-saving jump are skipped.
+ * because of a daylight-saving jump are skipped. Offsets are derived from
+ * formatted instants in the explicit host timezone so results do not depend on
+ * the machine's own timezone (CI runs in UTC, development machines may not).
  */
 
 export type WeeklyRule = {
@@ -120,16 +122,34 @@ function wallTime(parts: DateParts, minute: number): string {
 /**
  * Convert a host-local wall time to a UTC instant. Returns null when the wall
  * time does not exist because of a daylight-saving jump. Repeated wall times
- * (fall-back) resolve to the library's single deterministic instant.
+ * (fall-back) resolve to one deterministic instant regardless of the machine's
+ * own timezone.
  */
+const WALL_FORMAT = "yyyy-MM-dd'T'HH:mm:ss";
+
+/** Offset of `timeZone` at a UTC instant, derived from an explicit-zone format. */
+function offsetAtInstant(instant: number, timeZone: string): number {
+  const wall = formatInTimeZone(new Date(instant), timeZone, WALL_FORMAT);
+
+  return Date.parse(`${wall}Z`) - instant;
+}
+
 function toUtcMillis(parts: DateParts, minute: number, timeZone: string): number | null {
   const local = wallTime(parts, minute);
-  const candidate = fromZonedTime(local, timeZone);
-  const roundTrip = formatInTimeZone(candidate, timeZone, "yyyy-MM-dd'T'HH:mm:ss");
+  const wallAsUtc = Date.parse(`${local}Z`);
+  let candidate = wallAsUtc;
+
+  for (let attempt = 0; attempt < 4; attempt += 1) {
+    const next = wallAsUtc - offsetAtInstant(candidate, timeZone);
+    if (next === candidate) break;
+    candidate = next;
+  }
+
+  const roundTrip = formatInTimeZone(new Date(candidate), timeZone, WALL_FORMAT);
 
   if (roundTrip !== local) return null;
 
-  return candidate.getTime();
+  return candidate;
 }
 
 function rangesForDate(
