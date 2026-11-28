@@ -15,7 +15,7 @@ Running record of choices made in this project — why they were made, and what 
 
 **Decision:** Use `date-fns-tz` (with `date-fns` v4) for wall-clock ↔ UTC conversion in slot generation, and Vitest for the scheduling test suite.
 **Why:** `date-fns-tz` delegates DST rules to the platform IANA database via Intl, keeps the slot generator pure, and makes nonexistent local times detectable by round-tripping the formatted wall time. Vitest is the planned test runner and needs no extra config here.
-**Guardrail:** Callers pass IANA timezone names; all stored slot times are UTC. Ambiguous fall-back times resolve to one deterministic instant, and nonexistent spring-forward times are skipped.
+**Guardrail:** Callers pass IANA timezone names; all stored slot times are UTC. Offsets are derived from `formatInTimeZone` at explicit instants and verified by a round-trip, so ambiguous fall-back times resolve identically on developer machines and in UTC-based CI; nonexistent spring-forward times are skipped.
 **Rejected:** Luxon (larger API for one conversion), raw Intl alone (the plan calls for a timezone library).
 
 ## 2026-11-06 — Project name: YohiSlot
