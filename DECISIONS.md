@@ -11,6 +11,13 @@ Running record of choices made in this project — why they were made, and what 
 **Rejected:** YohiBook, YohiTime, YohiCalendar (all decent, but less personal and descriptive).
 **Note:** The 2026-11-06 entry below is kept as history.
 
+## 2026-11-28 — Timezone handling: date-fns-tz + Vitest
+
+**Decision:** Use `date-fns-tz` (with `date-fns` v4) for wall-clock ↔ UTC conversion in slot generation, and Vitest for the scheduling test suite.
+**Why:** `date-fns-tz` delegates DST rules to the platform IANA database via Intl, keeps the slot generator pure, and makes nonexistent local times detectable by round-tripping the formatted wall time. Vitest is the planned test runner and needs no extra config here.
+**Guardrail:** Callers pass IANA timezone names; all stored slot times are UTC. Ambiguous fall-back times resolve to one deterministic instant, and nonexistent spring-forward times are skipped.
+**Rejected:** Luxon (larger API for one conversion), raw Intl alone (the plan calls for a timezone library).
+
 ## 2026-11-06 — Project name: YohiSlot
 
 **Decision:** Name the project **YohiSlot**; repo `yohi441/yohislot`; local folder `~/projects/yohislot`.
