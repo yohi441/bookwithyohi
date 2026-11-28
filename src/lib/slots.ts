@@ -1,6 +1,13 @@
+import { formatInTimeZone, fromZonedTime } from "date-fns-tz";
+
 /**
  * Pure slot generation. This module has no database, network, or framework
  * dependencies so the scheduling logic can be tested in isolation.
+ *
+ * Wall-clock availability is interpreted in the host's IANA timezone; every
+ * slot returned here is a UTC instant. Conversions use `date-fns-tz` (which
+ * reads the IANA DST database via Intl), and local times that do not exist
+ * because of a daylight-saving jump are skipped.
  */
 
 export type WeeklyRule = {
@@ -36,6 +43,8 @@ export type GenerateSlotsInput = {
   timeZone: string;
   range: SlotRange;
   bookings?: readonly BusyInterval[];
+  /** Required separation around existing bookings. Defaults to 0. */
+  bufferMinutes?: number;
 };
 
 export type Slot = {
@@ -49,75 +58,19 @@ type DateParts = {
   day: number;
 };
 
-type TimeParts = DateParts & {
-  hour: number;
-  minute: number;
-  second: number;
-};
-
 type MinuteRange = {
   startMinute: number;
   endMinute: number;
 };
 
-const formatters = new Map<string, Intl.DateTimeFormat>();
-
-function getFormatter(timeZone: string): Intl.DateTimeFormat {
-  let formatter = formatters.get(timeZone);
-
-  if (!formatter) {
-    formatter = new Intl.DateTimeFormat("en-US", {
-      timeZone,
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-      hourCycle: "h23",
-    });
-    formatters.set(timeZone, formatter);
-  }
-
-  return formatter;
+function pad(value: number, width = 2): string {
+  return String(value).padStart(width, "0");
 }
 
-function localPartsAt(instant: number, timeZone: string): TimeParts {
-  const values = new Map<string, number>();
+function parseDateKey(value: string): DateParts {
+  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
 
-  for (const part of getFormatter(timeZone).formatToParts(new Date(instant))) {
-    if (part.type !== "literal") values.set(part.type, Number(part.value));
-  }
-
-  return {
-    year: values.get("year") ?? 0,
-    month: values.get("month") ?? 0,
-    day: values.get("day") ?? 0,
-    hour: values.get("hour") ?? 0,
-    minute: values.get("minute") ?? 0,
-    second: values.get("second") ?? 0,
-  };
-}
-
-/** Difference between the wall clock in `timeZone` and UTC at an instant. */
-function wallOffsetAt(instant: number, timeZone: string): number {
-  const local = localPartsAt(instant, timeZone);
-  const wallAsUtc = Date.UTC(
-    local.year,
-    local.month - 1,
-    local.day,
-    local.hour,
-    local.minute,
-    local.second,
-  );
-
-  return wallAsUtc - instant;
-}
-
-function parseDateKey(dateKey: string): DateParts {
-  const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(dateKey);
-
-  if (!match) throw new RangeError(`Invalid date: ${dateKey}`);
+  if (!match) throw new RangeError(`Invalid date: ${value}`);
 
   const year = Number(match[1]);
   const month = Number(match[2]);
@@ -129,16 +82,14 @@ function parseDateKey(dateKey: string): DateParts {
     parsed.getUTCMonth() !== month - 1 ||
     parsed.getUTCDate() !== day
   ) {
-    throw new RangeError(`Invalid date: ${dateKey}`);
+    throw new RangeError(`Invalid date: ${value}`);
   }
 
   return { year, month, day };
 }
 
 function dateKey(parts: DateParts): string {
-  return `${String(parts.year).padStart(4, "0")}-${String(parts.month).padStart(2, "0")}-${String(
-    parts.day,
-  ).padStart(2, "0")}`;
+  return `${pad(parts.year, 4)}-${pad(parts.month)}-${pad(parts.day)}`;
 }
 
 function addDays(parts: DateParts, days: number): DateParts {
@@ -157,33 +108,28 @@ function compareDates(left: DateParts, right: DateParts): number {
   );
 }
 
+/** Builds a timezone-free wall time from a host-local date and minute offset. */
+function wallTime(parts: DateParts, minute: number): string {
+  const wall = new Date(Date.UTC(parts.year, parts.month - 1, parts.day) + minute * 60_000);
+
+  return `${pad(wall.getUTCFullYear(), 4)}-${pad(wall.getUTCMonth() + 1)}-${pad(
+    wall.getUTCDate(),
+  )}T${pad(wall.getUTCHours())}:${pad(wall.getUTCMinutes())}:00`;
+}
+
 /**
  * Convert a host-local wall time to a UTC instant. Returns null when the wall
- * time does not exist because of a daylight-saving jump.
+ * time does not exist because of a daylight-saving jump. Repeated wall times
+ * (fall-back) resolve to the library's single deterministic instant.
  */
 function toUtcMillis(parts: DateParts, minute: number, timeZone: string): number | null {
-  const wallAsUtc = Date.UTC(parts.year, parts.month - 1, parts.day) + minute * 60_000;
-  const expected = new Date(wallAsUtc);
-  let candidate = wallAsUtc;
+  const local = wallTime(parts, minute);
+  const candidate = fromZonedTime(local, timeZone);
+  const roundTrip = formatInTimeZone(candidate, timeZone, "yyyy-MM-dd'T'HH:mm:ss");
 
-  for (let attempt = 0; attempt < 4; attempt += 1) {
-    const next = wallAsUtc - wallOffsetAt(candidate, timeZone);
-    if (next === candidate) break;
-    candidate = next;
-  }
+  if (roundTrip !== local) return null;
 
-  const actual = localPartsAt(candidate, timeZone);
-  if (
-    actual.year !== expected.getUTCFullYear() ||
-    actual.month !== expected.getUTCMonth() + 1 ||
-    actual.day !== expected.getUTCDate() ||
-    actual.hour !== expected.getUTCHours() ||
-    actual.minute !== expected.getUTCMinutes()
-  ) {
-    return null;
-  }
-
-  return candidate;
+  return candidate.getTime();
 }
 
 function rangesForDate(
@@ -214,10 +160,13 @@ function toMillis(value: Date | string): number {
 }
 
 export function generateSlots(input: GenerateSlotsInput): Slot[] {
-  const { durationMinutes, timeZone } = input;
+  const { durationMinutes, timeZone, bufferMinutes = 0 } = input;
 
   if (!Number.isInteger(durationMinutes) || durationMinutes <= 0) {
     throw new RangeError("durationMinutes must be a positive integer.");
+  }
+  if (!Number.isInteger(bufferMinutes) || bufferMinutes < 0) {
+    throw new RangeError("bufferMinutes must be a non-negative integer.");
   }
 
   const firstDay = parseDateKey(input.range.startDate);
@@ -228,6 +177,7 @@ export function generateSlots(input: GenerateSlotsInput): Slot[] {
   }
 
   const exceptionsByDate = new Map((input.exceptions ?? []).map((item) => [item.date, item]));
+  const bufferMs = bufferMinutes * 60_000;
   const busy = (input.bookings ?? []).map((booking) => ({
     start: toMillis(booking.startUtc),
     end: toMillis(booking.endUtc),
@@ -246,7 +196,9 @@ export function generateSlots(input: GenerateSlotsInput): Slot[] {
         if (start === null) continue;
 
         const end = start + durationMinutes * 60_000;
-        if (busy.some((item) => start < item.end && item.start < end)) continue;
+        if (busy.some((item) => start < item.end + bufferMs && item.start - bufferMs < end)) {
+          continue;
+        }
 
         slots.push({ startUtc: new Date(start), endUtc: new Date(end) });
       }
